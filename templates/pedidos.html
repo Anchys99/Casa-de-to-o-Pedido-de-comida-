@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Pedidos recibidos · Casa de Toño{% endblock %}
+{% block contenido %}
+<section class="intro"><h1>Pedidos recibidos</h1></section>
+{% set lista = pedidos|list %}
+{% if not lista %}
+  <p class="vacio-pag">Todavía no hay pedidos. <a href="{{ url_for('index') }}">Haz el primero.</a></p>
+{% else %}
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Folio</th><th>Fecha</th><th>Cliente</th><th>Sucursal</th><th>Entrega</th><th>Total</th></tr></thead>
+    <tbody>{% for p in lista %}
+      <tr><td>{{ p.folio }}</td><td>{{ p.fecha }}</td><td>{{ p.nombre }}</td><td>{{ p.sucursal }}</td><td>{{ p.entrega|capitalize }}</td><td>${{ p.total }}</td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+{% endif %}
+{% endblock %}

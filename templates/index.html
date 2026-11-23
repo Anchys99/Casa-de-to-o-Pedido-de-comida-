@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Pedido de alimentos · Casa de Toño{% endblock %}
+{% block contenido %}
+<section class="intro">
+  <h1>¿Qué se te antoja hoy?</h1>
+  <p>Arma tu pedido, elige cómo recibirlo y te lo preparamos en la sucursal que prefieras.</p>
+</section>
+
+{% if errores %}
+<div class="alerta" role="alert" id="alerta-servidor">
+  <strong>Revisa tu pedido:</strong>
+  <ul>{% for msg in errores.values() %}<li>{{ msg }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<form id="form-pedido" action="{{ url_for('pedido') }}" method="post" novalidate>
+  <div class="layout">
+    <div class="col-principal">
+
+      <fieldset class="bloque">
+        <legend>1. Elige tus platillos</legend>
+        {% set cats = ["Platillos", "Bebidas"] %}
+        {% for cat in cats %}
+          <h3 class="cat">{{ cat }}</h3>
+          {% for p in menu if p.cat == cat %}
+          <div class="item" data-precio="{{ p.precio }}">
+            <div class="item-info">
+              <strong>{{ p.nombre }}</strong>
+              <span>{{ p.desc }}</span>
+            </div>
+            <span class="precio">${{ p.precio }}</span>
+            <div class="stepper">
+              <button type="button" class="menos" aria-label="Quitar {{ p.nombre }}">−</button>
+              <input type="number" name="qty_{{ p.id }}" min="0" max="20" value="{{ datos.get('qty_' ~ p.id, 0) }}" aria-label="Cantidad de {{ p.nombre }}" readonly>
+              <button type="button" class="mas" aria-label="Agregar {{ p.nombre }}">+</button>
+            </div>
+          </div>
+          {% endfor %}
+        {% endfor %}
+        <p class="error" id="err-items">{{ errores.get('items', '') }}</p>
+      </fieldset>
+
+      <fieldset class="bloque">
+        <legend>2. Tus datos</legend>
+        <div class="campo">
+          <label for="nombre">Nombre completo</label>
+          <input id="nombre" name="nombre" type="text" autocomplete="name" value="{{ datos.get('nombre', '') }}" placeholder="Ej. María López Hernández">
+          <p class="error" id="err-nombre">{{ errores.get('nombre', '') }}</p>
+        </div>
+        <div class="campo">
+          <label for="telefono">Teléfono (10 dígitos)</label>
+          <input id="telefono" name="telefono" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel" value="{{ datos.get('telefono', '') }}" placeholder="5512345678">
+          <p class="error" id="err-telefono">{{ errores.get('telefono', '') }}</p>
+        </div>
+        <div class="campo">
+          <label for="sucursal">Sucursal</label>
+          <select id="sucursal" name="sucursal">
+            <option value="">Selecciona una sucursal</option>
+            {% for s in sucursales %}<option value="{{ s }}" {{ 'selected' if datos.get('sucursal') == s }}>{{ s }}</option>{% endfor %}
+          </select>
+          <p class="error" id="err-sucursal">{{ errores.get('sucursal', '') }}</p>
+        </div>
+      </fieldset>
+
+      <fieldset class="bloque">
+        <legend>3. Entrega y pago</legend>
+        <div class="opciones" role="radiogroup" aria-label="Tipo de entrega">
+          <label class="opcion"><input type="radio" name="entrega" value="sucursal" {{ 'checked' if datos.get('entrega') == 'sucursal' }}><span>Recoger en sucursal<small>Sin costo</small></span></label>
+          <label class="opcion"><input type="radio" name="entrega" value="domicilio" {{ 'checked' if datos.get('entrega') == 'domicilio' }}><span>A domicilio<small>+${{ envio }} de envío</small></span></label>
+        </div>
+        <p class="error" id="err-entrega">{{ errores.get('entrega', '') }}</p>
+
+        <div class="campo" id="campo-direccion" hidden>
+          <label for="direccion">Dirección de entrega</label>
+          <input id="direccion" name="direccion" type="text" autocomplete="street-address" value="{{ datos.get('direccion', '') }}" placeholder="Calle, número, colonia">
+          <p class="error" id="err-direccion">{{ errores.get('direccion', '') }}</p>
+        </div>
+
+        <div class="campo">
+          <label for="pago">Método de pago</label>
+          <select id="pago" name="pago">
+            <option value="">Selecciona un método</option>
+            {% for k, v in pagos.items() %}<option value="{{ k }}" {{ 'selected' if datos.get('pago') == k }}>{{ v }}</option>{% endfor %}
+          </select>
+          <p class="error" id="err-pago">{{ errores.get('pago', '') }}</p>
+        </div>
+
+        <div class="campo">
+          <label for="notas">Notas para la cocina <span class="contador"><span id="cuenta">0</span>/200</span></label>
+          <textarea id="notas" name="notas" rows="3" maxlength="200" placeholder="Sin cebolla, salsa aparte, etc.">{{ datos.get('notas', '') }}</textarea>
+          <p class="error" id="err-notas">{{ errores.get('notas', '') }}</p>
+        </div>
+      </fieldset>
+    </div>
+
+    <aside class="resumen" aria-live="polite">
+      <h2>Tu pedido</h2>
+      <ul id="lista-resumen"><li class="vacio">Aún no agregas nada.</li></ul>
+      <dl>
+        <div><dt>Subtotal</dt><dd id="subtotal">$0</dd></div>
+        <div><dt>Envío</dt><dd id="envio">$0</dd></div>
+        <div class="total"><dt>Total</dt><dd id="total">$0</dd></div>
+      </dl>
+      <button type="submit" class="btn">Enviar pedido</button>
+    </aside>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>window.ENVIO = {{ envio }};</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}

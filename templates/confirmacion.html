@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Pedido recibido · Casa de Toño{% endblock %}
+{% block contenido %}
+<section class="ticket">
+  <p class="sello">¡Pedido recibido!</p>
+  <h1>Gracias, {{ p.nombre.split()[0] }}.</h1>
+  <p>Tu folio es <strong>{{ p.folio }}</strong>. {% if p.entrega == 'domicilio' %}Lo llevaremos a {{ p.direccion }}.{% else %}Pasa por él a la sucursal {{ p.sucursal }}.{% endif %}</p>
+  <table>
+    <thead><tr><th>Platillo</th><th>Cant.</th><th>Importe</th></tr></thead>
+    <tbody>
+      {% for i in p['items'] %}<tr><td>{{ i.nombre }}</td><td>{{ i.cant }}</td><td>${{ i.importe }}</td></tr>{% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2">Subtotal</td><td>${{ p.subtotal }}</td></tr>
+      <tr><td colspan="2">Envío</td><td>${{ p.envio }}</td></tr>
+      <tr class="total"><td colspan="2">Total a pagar ({{ p.pago }})</td><td>${{ p.total }}</td></tr>
+    </tfoot>
+  </table>
+  {% if p.notas %}<p class="nota"><strong>Notas:</strong> {{ p.notas }}</p>{% endif %}
+  <p class="meta">{{ p.fecha }} · Sucursal {{ p.sucursal }} · Tel. {{ p.telefono }}</p>
+  <a class="btn" href="{{ url_for('index') }}">Hacer otro pedido</a>
+</section>
+{% endblock %}

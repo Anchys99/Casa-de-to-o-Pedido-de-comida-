@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Casa de Toño{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="papel" aria-hidden="true"></div>
+  <header class="cabecera">
+    <a class="marca" href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='logo.svg') }}" alt="" width="64" height="64">
+      <span><strong>Casa de Toño</strong><small>Cocina mexicana de la casa</small></span>
+    </a>
+    <nav><a href="{{ url_for('index') }}">Hacer pedido</a><a href="{{ url_for('pedidos') }}">Pedidos recibidos</a></nav>
+  </header>
+  <main>{% block contenido %}{% endblock %}</main>
+  <footer class="pie">Casa de Toño · Proyecto integrador Flask · Equipo 2</footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
