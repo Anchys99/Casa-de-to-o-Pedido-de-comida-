@@ -1,3 +1,4 @@
+import os
 import re
 import sqlite3
 from datetime import datetime
@@ -65,9 +66,15 @@ SUCURSALES = ["Centro", "Coyoacán", "Polanco",
 # ---------------------------------
 
 def conectar():
-    conexion = sqlite3.connect("database.db")
+    ruta_bd = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "database.db"
+    )
+
+    conexion = sqlite3.connect(ruta_bd)
     conexion.row_factory = sqlite3.Row
     conexion.execute("PRAGMA foreign_keys = ON")
+
     return conexion
 
 
