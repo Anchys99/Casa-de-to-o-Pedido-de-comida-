@@ -404,6 +404,7 @@ def pedidos():
 # EJECUTAR APLICACION
 # ---------------------------------
 
+crear_base_datos()
+
 if __name__ == "__main__":
-    crear_base_datos()
     app.run(debug=True)
