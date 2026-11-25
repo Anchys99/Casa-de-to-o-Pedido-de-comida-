@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Registro de clientes · Casa de Toño{% endblock %}
+
+{% block contenido %}
+
+<section class="intro">
+    <h1>Registro de clientes</h1>
+    <p>Registra los datos de tus clientes.</p>
+</section>
+
+<section class="formulario">
+
+    <form method="POST">
+
+        <label for="nombre">Nombre completo:</label>
+        <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            placeholder="Escribe tu nombre"
+            required
+        >
+
+        <label for="telefono">Teléfono:</label>
+        <input
+            type="tel"
+            id="telefono"
+            name="telefono"
+            placeholder="10 dígitos"
+            maxlength="10"
+            required
+        >
+
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
+
+        <button type="submit">
+            Registrar cliente
+        </button>
+
+    </form>
+
+</section>
+
+<section class="intro">
+    <h2>Clientes registrados</h2>
+</section>
+
+{% if clientes %}
+
+<div class="tabla-scroll">
+    <table class="tabla">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.id }}</td>
+                <td>{{ cliente.nombre }}</td>
+                <td>{{ cliente.telefono }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+{% else %}
+
+<p class="vacio-pag">
+    Todavía no hay clientes registrados.
+</p>
+
+{% endif %}
+
+<a href="{{ url_for('index') }}">
+    Volver al menú de alimentos
+</a>
+
+{% endblock %}
